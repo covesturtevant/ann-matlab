@@ -3,13 +3,7 @@ function [response,driver_fields_varied] = ANN_response_function(ANNstats,driver
 % one or two driver variables, setting all other drivers to specific
 % values.
 % -------------- Inputs -----------------
-% net: A neural network object as output by e.g. ANN_robust_full.m in the
-%   ANNstats.bestnet output
-% drivers: The R x C matrix of C drivers exactly as input into ANN_robust_full.m
-% driver_fields: A 1 x C cell array of the column names of drivers.
-% target: A R x 1 matrix of the target variable for which the ANN was
-%       created.
-% ANNstats
+% ANNstats: Output structure from ANN_robust_full or ANN_robust_fast
 % drivers_test = a structure of the driver values to test. The fields in
 %       this structure MUST be in the same column order as the driver set 
 %       used to train the ANN. 
@@ -22,8 +16,13 @@ function [response,driver_fields_varied] = ANN_response_function(ANNstats,driver
 %   drivers. Thus, if 
 %
 % -------------- Example -----------------
-% net = ANNstats.bestnet{1}
-% [response,driver_fields_varied] = ANN_response_function(net,drivers,ANNstats.PSX,ANNstats.PST)
+% [flux_gf,ANNpred,ANNext,ANNunc,ANNc,ANNstats] = ANN_robust_full(drivers,flux,arch,clmax,nmin,clund,Next,Ninit,f,extout);
+% drivers_test = struct();
+% drivers_test.driver_1 = 12; % Corresponds to 1st column var in drivers
+% drivers_test.driver_2 = [1 2 3 4 5]; % Corresponds to 2nd column var in drivers
+% drivers_test.driver_3 = 5; % Corresponds to 3rd column var in drivers
+% drivers_test.driver_4 = [6 7 8]; % Corresponds to 4th column var in drivers
+% [response,driver_fields_varied] = ANN_response_function(ANNstats,drivers_test);
 % ---------------------------------------
 % Authorship: 2023, Cove Sturtevant. 
 
