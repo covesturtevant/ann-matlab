@@ -71,22 +71,26 @@ function [T_gf,T_pred,T_ext,unc,c,ANNstats] = ANN_robust_fast(X,T,arch,clmax,nmi
 %      ANNstats.perc_better = the percentage improvement in m.s.e. for each
 %            tested architecture, size [1,length(arch)]
 %      ANNstats.bestnet = the final ANN for each extraction
-%
+%      ANNstats.PSX = the scale settings returned from mapminmax on X in 
+%      order to apply the same mappings to a different explanatory dataset
+%      ANNstats.PST = the scale settings returned from mapminmax on T in 
+%      order to apply the same mapping to a different target dataset
 % ---------------------------------------
 % The methods used in this code were inspired by instruction from Dario
 % Papale.
 % Copyright 2013, Cove Sturtevant. All rights reserved. 
 % Updated September 2014 to include ANNstats output
+% Updated January 2024 to include mapminmax scaling settings in ANNstats
 
 %% Prep the data
 
 % Scale all inputs/outputs between -1 and 1
-X = mapminmax(X'); X = X';
+[X,PSX] = mapminmax(X'); X = X';
 %[X,~] = fixunknowns(X'); % Turn NaNs in predictors to mean value
 %X = X(1:2:end,:)';
 
 T_gf = T; % Save original 
-[T,PS] = mapminmax(T'); T = T';
+[T,PST] = mapminmax(T'); T = T';
 
 % Create several levels of network architecture complexity to test
 if isempty(arch)
@@ -271,7 +275,7 @@ for Nexti = 1:Next
     ANNstats.bestnet = net;
     
     Ty = net(X')'; % Simulate all outputs
-    T_ext(:,Nexti) = mapminmax('reverse',Ty',PS)';
+    T_ext(:,Nexti) = mapminmax('reverse',Ty',PST)';
     
     figure(2); 
     h1 = plot(T_ext(:,Nexti),'color',[0.5 0.5 0.5]);
@@ -304,6 +308,8 @@ ANNstats.arch = arch;
 ANNstats.bestai = bestai;
 ANNstats.mse_val = mse_val;
 ANNstats.perc_better = perc_better;
+ANNstats.PSX = PSX;
+ANNstats.PST = PST;
 
 end
 
