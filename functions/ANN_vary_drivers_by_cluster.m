@@ -28,14 +28,17 @@ function [drivers_test] = ANN_vary_drivers_by_cluster(drivers,driver_fields,driv
 % Compute 1st percentile, 99th percentile, and median driver values for this cluster
 % Note, we compute 1st -99th percentiles to avoid outliers
 driverClust = drivers(driver_clusters == cluster,:);
-minDriverClust = prctile(driverClust,1,1); % Get average values for this cluster
-medDriverClust = median(driverClust,1); % Get average values for this cluster
-maxDriverClust = prctile(driverClust,99,1); % Get average values for this cluster
 
 % Assign the median values to the driver test set
 n_fields = length(driver_fields);
 drivers_test = struct();
+minDriverClust = NaN(1,n_fields); % initialize
+medDriverClust = NaN(1,n_fields); % initialize
+maxDriverClust = NaN(1,n_fields); % initialize
 for i = 1:n_fields
+    minDriverClust(i) = prctile(driverClust(~isnan(driverClust(:,i)),i),1,1); % Get average values for this cluster
+    medDriverClust(i) = nanmedian(driverClust(:,i),1); % Get average values for this cluster
+    maxDriverClust(i) = prctile(driverClust(~isnan(driverClust(:,i)),i),99,1); % Get average values for this cluster
     drivers_test.(driver_fields{i}) = medDriverClust(i);
 end
 
